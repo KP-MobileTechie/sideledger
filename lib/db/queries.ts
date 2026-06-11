@@ -73,6 +73,63 @@ export async function getTransactionsForMonth(
     .orderBy(desc(transactions.date));
 }
 
+/** Build a chronological list of `count` YYYY-MM strings ending at `anchor` (inclusive). */
+function monthList(anchor: string, count: number): string[] {
+  const [yearStr, monStr] = anchor.split("-");
+  let year = Number(yearStr);
+  let mon = Number(monStr); // 1-12
+  const out: string[] = [];
+  for (let i = 0; i < count; i++) {
+    out.push(`${year}-${String(mon).padStart(2, "0")}`);
+    mon -= 1;
+    if (mon === 0) {
+      mon = 12;
+      year -= 1;
+    }
+  }
+  return out.reverse();
+}
+
+export async function getMonthlyTotals(
+  db: DB,
+  userId: string,
+  monthsBack: number,
+  anchorMonth: string
+): Promise<{ month: string; incomeCents: number; expenseCents: number }[]> {
+  const months = monthList(anchorMonth, monthsBack);
+  const firstMonth = months[0];
+  const start = monthBounds(firstMonth).start; // first day of earliest bucket
+  const end = monthBounds(anchorMonth).end; // first day of month after anchor
+
+  const rows = await db
+    .select({
+      type: transactions.type,
+      amountCents: transactions.amountCents,
+      date: transactions.date,
+    })
+    .from(transactions)
+    .where(
+      and(
+        eq(transactions.userId, userId),
+        gte(transactions.date, start),
+        lt(transactions.date, end)
+      )
+    );
+
+  const buckets = new Map<string, { incomeCents: number; expenseCents: number }>();
+  for (const m of months) buckets.set(m, { incomeCents: 0, expenseCents: 0 });
+
+  for (const row of rows) {
+    const key = row.date.slice(0, 7); // YYYY-MM
+    const bucket = buckets.get(key);
+    if (!bucket) continue;
+    if (row.type === "income") bucket.incomeCents += row.amountCents;
+    else bucket.expenseCents += row.amountCents;
+  }
+
+  return months.map((month) => ({ month, ...buckets.get(month)! }));
+}
+
 export async function updateTransaction(
   db: DB,
   userId: string,

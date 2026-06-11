@@ -2,7 +2,7 @@
 
 A free income and expense tracker for freelancers and side-hustlers. Sign in, log money in and money out, and see at a glance your real net profit, how much to set aside for taxes, and where the money goes month by month.
 
-**Live:** <add Vercel URL>
+**Live:** https://sideledger.vercel.app
 
 <!-- add demo GIF/screenshot -->
 

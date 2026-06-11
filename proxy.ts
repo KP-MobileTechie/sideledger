@@ -6,10 +6,11 @@ import { NextResponse } from "next/server";
 // null). We redirect unauthenticated visitors away from `/dashboard` to the
 // landing page.
 //
-// Note (Next.js 16): the `middleware` file convention is deprecated in favor
-// of `proxy`, and the proxy/middleware now defaults to the Node.js runtime
-// (no `runtime` config is permitted here). The Node.js runtime is required
-// for the database session strategy used by `auth()` to read the session.
+// Note (Next.js 16): this file uses the `proxy` convention (the old
+// `middleware` file convention is deprecated). Proxy defaults to the Node.js
+// runtime (no `runtime` config is permitted here). The Node.js runtime is
+// required for the database session strategy used by `auth()` to read the
+// session.
 export default auth((req) => {
   const { pathname } = req.nextUrl;
 

@@ -1,0 +1,4 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "if [ -n \"$DATABASE_URL\" ]; then npx drizzle-kit migrate; fi && next build"
+}

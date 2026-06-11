@@ -15,6 +15,7 @@ import { SummaryCards } from "@/components/summary-cards";
 import { IncomeExpenseChart } from "@/components/income-expense-chart";
 import { CategoryDonut } from "@/components/category-donut";
 import { MonthSelector } from "@/components/month-selector";
+import { SettingsDialog } from "@/components/settings-dialog";
 import { DashboardClient } from "@/components/dashboard-client";
 import type { Txn } from "@/components/transaction-table";
 
@@ -69,7 +70,13 @@ export default async function Page({
               ledger
             </span>
           </h1>
-          <MonthSelector month={currentMonth} />
+          <div className="flex items-center gap-2">
+            <MonthSelector month={currentMonth} />
+            <SettingsDialog
+              taxSetAsidePercent={settings.taxSetAsidePercent}
+              currency={settings.currency}
+            />
+          </div>
         </header>
 
         <section className="mt-6">
